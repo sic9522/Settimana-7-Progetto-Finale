@@ -121,7 +121,7 @@ header {
 }
 
 .cardResults {
-    padding: 20px 20px 0 20px;
+    padding: 20px;
 }
 
 .cardResults h3 {
@@ -151,7 +151,9 @@ header {
     margin-bottom: 4px;
 }
 
-
+.cardResults p.noEventsMessage {
+    margin-bottom: 40px;
+}
 
 .resultBadge {
     display: inline-block;
@@ -223,10 +225,6 @@ ul {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-}
-
-.leagueFavBtn:disabled {
-    cursor: default;
 }
 
 /*toast*/

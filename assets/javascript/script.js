@@ -9,6 +9,9 @@ const clearFavoritesBtn = document.querySelector('#clearFavoritesBtn');
 const eventsSection = document.querySelector('#eventsSection');
 const leaguesList = document.querySelector('#leaguesList');
 const toastContainer = document.querySelector('#toastContainer');
+const confirmClearModalEl = document.querySelector('#confirmClearModal');
+const confirmClearModal = new bootstrap.Modal(confirmClearModalEl);
+const confirmClearBtn = document.querySelector('#confirmClearBtn');
 const sportsDb = "https://www.thesportsdb.com/api/v1/json/3";
 
 //toast
@@ -29,6 +32,30 @@ function showToast(message) {
     }, 2500);
 }
 
+//loading state
+
+function showSpinner(container) {
+    container.replaceChildren();
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('d-flex', 'justify-content-center', 'my-4');
+    const spinner = document.createElement('div');
+    spinner.classList.add('spinner-border', 'text-primary');
+    spinner.setAttribute('role', 'status');
+    const srText = document.createElement('span');
+    srText.classList.add('visually-hidden');
+    srText.textContent = 'Caricamento...';
+    spinner.appendChild(srText);
+    wrapper.appendChild(spinner);
+    container.appendChild(wrapper);
+}
+
+function showError(container, message) {
+    container.replaceChildren();
+    const errorMessage = document.createElement('p');
+    errorMessage.textContent = message;
+    container.appendChild(errorMessage);
+}
+
 //fetch
 
 async function fetchJson(url) {
@@ -39,23 +66,23 @@ async function fetchJson(url) {
     return res.json();
 }
 
-async function searchTeams(nomeSquadra) {
-    const data = await fetchJson(`${sportsDb}/searchteams.php?t=${encodeURIComponent(nomeSquadra)}`);
+async function searchTeams(teamName) {
+    const data = await fetchJson(`${sportsDb}/searchteams.php?t=${encodeURIComponent(teamName)}`);
     return data.teams;
 }
 
-async function getNextEvents(idSquadra) {
-    const data = await fetchJson(`${sportsDb}/eventsnext.php?id=${idSquadra}`);
+async function getNextEvents(teamId) {
+    const data = await fetchJson(`${sportsDb}/eventsnext.php?id=${teamId}`);
     return data.events;
 }
 
-async function getLastEvents(idSquadra) {
-    const data = await fetchJson(`${sportsDb}/eventslast.php?id=${idSquadra}`);
+async function getLastEvents(teamId) {
+    const data = await fetchJson(`${sportsDb}/eventslast.php?id=${teamId}`);
     return data.results;
 }
 
-async function getLeagueTeams(nomeCampionato) {
-    const data = await fetchJson(`${sportsDb}/search_all_teams.php?l=${encodeURIComponent(nomeCampionato)}`);
+async function getLeagueTeams(leagueName) {
+    const data = await fetchJson(`${sportsDb}/search_all_teams.php?l=${encodeURIComponent(leagueName)}`);
     return data.teams;
 }
 
@@ -72,25 +99,36 @@ async function handleSearch() {
     const newSearch = search.value.trim();
     if (!newSearch) return;
     search.value = '';
+
+    searchPlaceholder.classList.add('d-none');
+    eventsSection.classList.add('d-none');
+    showSpinner(results);
+
+    let teams;
     try {
-        const teams = await searchTeams(newSearch);
-        searchPlaceholder.classList.add('d-none');
-        render(teams);
-        if (teams && teams.length > 0) {
-            const firstTeam = teams[0];
-            const nextEvents = await getNextEvents(firstTeam.idTeam);
-            const lastEvents = await getLastEvents(firstTeam.idTeam);
-            renderEvents(firstTeam, nextEvents, lastEvents);
-            eventsSection.classList.remove('d-none');
-        } else {
-            eventsSection.classList.add('d-none');
-        }
+        teams = await searchTeams(newSearch);
     } catch (error) {
         console.error('Errore durante la ricerca:', error);
-        results.replaceChildren();
-        const message = document.createElement('p');
-        message.textContent = 'Errore durante la ricerca, riprova più tardi.';
-        results.appendChild(message);
+        showError(results, 'Errore durante la ricerca, riprova più tardi.');
+        return;
+    }
+
+    render(teams);
+
+    if (!teams || teams.length === 0) {
+        return;
+    }
+
+    eventsSection.classList.remove('d-none');
+    showSpinner(eventsCard);
+    try {
+        const firstTeam = teams[0];
+        const nextEvents = await getNextEvents(firstTeam.idTeam);
+        const lastEvents = await getLastEvents(firstTeam.idTeam);
+        renderEvents(firstTeam, nextEvents, lastEvents);
+    } catch (error) {
+        console.error('Errore nel caricamento degli eventi:', error);
+        showError(eventsCard, 'Errore nel caricamento dei dettagli, riprova più tardi.');
     }
 }
 
@@ -123,13 +161,15 @@ function buildTeamCard(team, actionBtn) {
     card.appendChild(actionBtn);
 
     card.addEventListener('click', async function () {
+        eventsSection.classList.remove('d-none');
+        showSpinner(eventsCard);
         try {
             const nextEvents = await getNextEvents(team.idTeam);
             const lastEvents = await getLastEvents(team.idTeam);
             renderEvents(team, nextEvents, lastEvents);
-            eventsSection.classList.remove('d-none');
         } catch (error) {
             console.error('Errore nel caricamento degli eventi:', error);
+            showError(eventsCard, 'Errore nel caricamento dei dettagli, riprova più tardi.');
         }
     });
 
@@ -158,7 +198,11 @@ function render(teams) {
             addBtn.textContent = 'Aggiungi ai preferiti';
             addBtn.addEventListener('click', function (event) {
                 event.stopPropagation();
-                addFavorites(team);
+                const added = addFavorites(team);
+                if (added) {
+                    addBtn.textContent = '✅Già tra i preferiti';
+                    addBtn.disabled = true;
+                }
             });
         }
 
@@ -183,15 +227,16 @@ function addFavorites(team) {
     const present = favoriteTeams.some(function (fav) {
         return fav.idTeam === team.idTeam;
     });
-    if (present) return;
+    if (present) return false;
     if (favoriteTeams.length >= 4) {
-        alert('Puoi aggiungere al massimo 4 squadre preferite.');
-        return;
+        showToast('Puoi aggiungere al massimo 4 squadre preferite.');
+        return false;
     }
     favoriteTeams.push(team);
     saveFavorites(favoriteTeams);
     renderFavorites();
     showToast('Squadra aggiunta!');
+    return true;
 }
 
 function removeFavorites(team) {
@@ -205,11 +250,14 @@ function removeFavorites(team) {
 }
 
 clearFavoritesBtn.addEventListener('click', function () {
-    if (confirm('Vuoi davvero cancellare tutti i preferiti?')) {
-        saveFavorites([]);
-        renderFavorites();
-        showToast('Tutte le squadre rimosse');
-    }
+    confirmClearModal.show();
+});
+
+confirmClearBtn.addEventListener('click', function () {
+    saveFavorites([]);
+    renderFavorites();
+    showToast('Tutte le squadre rimosse');
+    confirmClearModal.hide();
 });
 
 //render favorite
@@ -265,6 +313,7 @@ function renderEvents(team, nextEvents, lastEvents) {
     nextCol.appendChild(eventNext);
     if (!nextEvents) {
         const noEvents = document.createElement('p');
+        noEvents.classList.add('noEventsMessage');
         noEvents.textContent = 'Nessun evento in programma'
         nextCol.appendChild(noEvents);
     } else {
@@ -360,11 +409,28 @@ leaguesList.addEventListener('click', async function (event) {
         return;
     }
 
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.classList.add('d-flex', 'justify-content-center', 'my-2');
+    const spinner = document.createElement('div');
+    spinner.classList.add('spinner-border', 'spinner-border-sm', 'text-primary');
+    spinner.setAttribute('role', 'status');
+    const srText = document.createElement('span');
+    srText.classList.add('visually-hidden');
+    srText.textContent = 'Caricamento...';
+    spinner.appendChild(srText);
+    loadingIndicator.appendChild(spinner);
+    li.appendChild(loadingIndicator);
+
     try {
         const teams = await getLeagueTeams(li.dataset.league);
+        loadingIndicator.remove();
         renderLeagueTeams(li, teams);
     } catch (error) {
         console.error('Errore nel caricamento delle squadre del campionato:', error);
+        loadingIndicator.remove();
+        const errorMessage = document.createElement('p');
+        errorMessage.textContent = 'Errore nel caricamento, riprova più tardi.';
+        li.appendChild(errorMessage);
     }
 });
 
@@ -407,24 +473,26 @@ function renderLeagueTeams(li, teams) {
                 event.stopPropagation();
                 if (isFav) {
                     removeFavorites(team);
-                } else {
-                    addFavorites(team);
+                    teamsList.remove();
+                } else if (addFavorites(team)) {
+                    teamsList.remove();
                 }
-                teamsList.remove();
             });
             teamItem.appendChild(favStar);
 
             teamItem.addEventListener('click', async function (event) {
                 event.stopPropagation();
+                searchPlaceholder.classList.add('d-none');
+                render([team]);
+                eventsSection.classList.remove('d-none');
+                showSpinner(eventsCard);
                 try {
-                    searchPlaceholder.classList.add('d-none');
-                    render([team]);
                     const nextEvents = await getNextEvents(team.idTeam);
                     const lastEvents = await getLastEvents(team.idTeam);
                     renderEvents(team, nextEvents, lastEvents);
-                    eventsSection.classList.remove('d-none');
                 } catch (error) {
                     console.error('Errore nel caricamento degli eventi:', error);
+                    showError(eventsCard, 'Errore nel caricamento dei dettagli, riprova più tardi.');
                 }
             });
 

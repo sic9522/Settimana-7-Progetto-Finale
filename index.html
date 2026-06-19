@@ -17,6 +17,7 @@
             <h1 class="fw-bold">SportsHub</h1>
             <p>Cerca una squadra, scopri prossime partite e ultimi risultati</p>
             <div class="d-flex justify-content-center">
+                <label for="search" class="visually-hidden">Cerca una squadra</label>
                 <input type="search" name="search" id="search" placeholder="Cerca la tua squadra">
                 <button type="button" id="searchBtn" class="btn">Cerca</button>
             </div>
@@ -63,6 +64,20 @@
     </main>
 
     <div id="toastContainer"></div>
+
+    <div class="modal fade" id="confirmClearModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body">
+                    Vuoi davvero cancellare tutti i preferiti?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-danger" id="confirmClearBtn">Cancella tutti</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
