@@ -213,7 +213,13 @@ function render(teams) {
 //localstorage
 function getFavorites() {
     const data = localStorage.getItem('favorites');
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    try {
+        return JSON.parse(data);
+    } catch (error) {
+        console.error('Dati preferiti corrotti, reset alla lista vuota:', error);
+        return [];
+    }
 }
 
 function saveFavorites(favoriteTeams) {
@@ -333,6 +339,7 @@ function renderEvents(team, nextEvents, lastEvents) {
     lastCol.appendChild(eventLast);
     if (!lastEvents) {
         const noEvents = document.createElement('p');
+        noEvents.classList.add('noEventsMessage');
         noEvents.textContent = 'Nessuna partita trovata'
         lastCol.appendChild(noEvents)
     } else {
@@ -469,6 +476,7 @@ function renderLeagueTeams(li, teams) {
             favStar.type = 'button';
             favStar.classList.add('leagueFavBtn');
             favStar.textContent = isFav ? '★' : '☆';
+            favStar.setAttribute('aria-label', isFav ? 'Rimuovi dai preferiti' : 'Aggiungi ai preferiti');
             favStar.addEventListener('click', function (event) {
                 event.stopPropagation();
                 if (isFav) {
