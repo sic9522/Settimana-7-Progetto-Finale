@@ -13,6 +13,9 @@ const confirmClearModalEl = document.querySelector('#confirmClearModal');
 const confirmClearModal = new bootstrap.Modal(confirmClearModalEl);
 const confirmClearBtn = document.querySelector('#confirmClearBtn');
 const sportsDb = "https://www.thesportsdb.com/api/v1/json/3";
+const placeholderBadge = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#cccccc"><path d="M12 2 4 5v6c0 5 3.5 9 8 11 4.5-2 8-6 8-11V5l-8-3z"/></svg>'
+);
 
 //toast
 
@@ -89,7 +92,12 @@ async function getLeagueTeams(leagueName) {
 search.addEventListener('input', function () {
     const value = search.value;
     if (value.length > 0) {
-        search.value = value.charAt(0).toUpperCase() + value.slice(1);
+        const capitalized = value.charAt(0).toUpperCase() + value.slice(1);
+        if (capitalized !== value) {
+            const cursorPosition = search.selectionStart;
+            search.value = capitalized;
+            search.setSelectionRange(cursorPosition, cursorPosition);
+        }
     }
 });
 
@@ -146,8 +154,11 @@ function buildTeamCard(team, actionBtn) {
     const card = document.createElement('div');
     card.classList.add('cardGroup');
     const imgTeam = document.createElement('img');
-    imgTeam.src = team.strBadge;
+    imgTeam.src = team.strBadge || placeholderBadge;
     imgTeam.alt = team.strTeam;
+    imgTeam.addEventListener('error', function () {
+        imgTeam.src = placeholderBadge;
+    });
     const nameTeam = document.createElement('h5');
     nameTeam.textContent = team.strTeam;
     const leagueTeam = document.createElement('p');
@@ -462,8 +473,11 @@ function renderLeagueTeams(li, teams) {
             const teamItem = document.createElement('li');
             teamItem.classList.add('leagueTeamItem');
             const badge = document.createElement('img');
-            badge.src = team.strBadge;
+            badge.src = team.strBadge || placeholderBadge;
             badge.alt = team.strTeam;
+            badge.addEventListener('error', function () {
+                badge.src = placeholderBadge;
+            });
             const name = document.createElement('span');
             name.textContent = team.strTeam;
             teamItem.appendChild(badge);
