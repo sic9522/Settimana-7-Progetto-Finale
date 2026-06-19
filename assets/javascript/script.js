@@ -153,6 +153,12 @@ search.addEventListener('keydown', function (event) {
 function buildTeamCard(team, actionBtn) {
     const card = document.createElement('div');
     card.classList.add('cardGroup');
+    if (team.strSport) {
+        const sportBadge = document.createElement('span');
+        sportBadge.classList.add('sportBadge');
+        sportBadge.textContent = team.strSport;
+        card.appendChild(sportBadge);
+    }
     const imgTeam = document.createElement('img');
     imgTeam.src = team.strBadge || placeholderBadge;
     imgTeam.alt = team.strTeam;
