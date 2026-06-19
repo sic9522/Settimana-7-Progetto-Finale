@@ -1,6 +1,6 @@
-# SportsHub ⚽
+# SportsHub 🏆
 
-Web app per cercare squadre di calcio, salvarle tra i preferiti e consultare prossimi eventi, ultimi risultati e informazioni sullo stadio.
+Web app per cercare squadre di qualsiasi sport di squadra (calcio, basket, hockey, football americano e altri), salvarle tra i preferiti e consultare prossimi eventi, ultimi risultati e informazioni sullo stadio.
 
 ## Indice 📋
 
@@ -12,11 +12,11 @@ Web app per cercare squadre di calcio, salvarle tra i preferiti e consultare pro
 
 ## Funzionalità ✨
 
-- 🔍 Ricerca squadra per nome ([searchteams.php](https://www.thesportsdb.com/free_sports_api))
+- 🔍 Ricerca squadra per nome, senza limiti di sport ([searchteams.php](https://www.thesportsdb.com/free_sports_api) interroga tutto il database di TheSportsDB: calcio, basket, hockey, football americano, baseball, ecc.)
 - ⭐ Aggiunta/rimozione dai preferiti (massimo 4), salvati in `localStorage`
 - 🔔 Toast di conferma su aggiunta, rimozione e cancellazione totale dei preferiti (con conferma via modale per l'azione distruttiva)
 - 📅 Dettagli squadra: prossimi eventi, ultimi risultati (con badge vittoria/sconfitta/pareggio) e informazioni sullo stadio
-- 🏆 Esplorazione rapida dei principali campionati europei dalla sidebar (Serie A, Premier League, Liga, Bundesliga, Ligue 1)
+- ⚽ Esplorazione rapida dei principali campionati di calcio europei dalla sidebar (Serie A, Premier League, Liga, Bundesliga, Ligue 1)
 - ⏳ Spinner di caricamento e messaggi di errore durante le chiamate all'API
 - ♿ Attenzione all'accessibilità: label e `aria-label` sui controlli, `aria-live` sui toast
 
