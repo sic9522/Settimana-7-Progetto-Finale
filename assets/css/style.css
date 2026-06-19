@@ -1,0 +1,258 @@
+body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: #F4F6FA;
+}
+
+/*header*/
+header {
+    background-color: #193366;
+}
+
+#search {
+    width: 100%;
+    max-width: 400px;
+    margin-right: 5px;
+    border-radius: 4px;
+    padding-left: 10px;
+}
+
+#searchBtn {
+    padding: 4px 12px;
+    font-weight: bold;
+    color: #193366;
+    background-color: #fff;
+}
+
+#searchBtn:hover {
+    background-color: #fff7d0;
+}
+
+/*card*/
+.favoriteCol {
+    flex-grow: 1;
+}
+
+.cardGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    height: 280px;
+    overflow: hidden;
+}
+
+.cardGroup h5,
+.cardGroup p {
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cardGroup:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cardGroup img {
+    max-width: 80px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.cardGroup h5 {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.cardGroup p {
+    margin-bottom: 0;
+}
+
+.cardBtn {
+    min-width: 90%;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 4px;
+    border: none;
+    border-radius: 4px;
+}
+
+.addBtn {
+    background-color: hsl(45, 90%, 55%);
+}
+
+.addBtn:hover {
+    background-color: hsl(45, 90%, 48%);
+}
+
+.removeBtn {
+    color: #AA0000;
+    background-color: #ffe5e5;
+}
+
+.removeBtn:hover {
+    background-color: #ffd0d0;
+}
+
+.clearFavoritesBtn {
+    font-weight: bold;
+    font-size: 14px;
+    padding: 4px 12px;
+    border: none;
+    border-radius: 4px;
+    color: #AA0000;
+    background-color: #ffe5e5;
+}
+
+.clearFavoritesBtn:hover {
+    background-color: #ffd0d0;
+}
+
+.cardResults {
+    padding: 20px 20px 0 20px;
+}
+
+.cardResults h3 {
+    font-weight: bold;
+    color: blue;
+}
+
+.cardResults h5 {
+    font-weight: bold;
+    border-bottom: 2px solid blue;
+    margin-bottom: 15px;
+}
+
+.cardResults p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.cardResults h6 {
+    font-weight: bold;
+    border-bottom: 0.1px solid rgb(184, 184, 184);
+    margin-bottom: 40px;
+}
+
+.cardResults h6.stadiumName {
+    border-bottom: none;
+    margin-bottom: 4px;
+}
+
+
+
+.resultBadge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 42px;
+}
+
+.badgeWin {
+    background-color: #2e7d32;
+}
+
+.badgeLoss {
+    background-color: #c62828;
+}
+
+.badgeDraw {
+    background-color: #757575;
+}
+
+/*extra*/
+ul {
+    list-style-type: none;
+}
+
+#leaguesList li {
+    cursor: pointer;
+    padding: 4px 0;
+}
+
+#leaguesList li:hover {
+    color: #193366;
+    font-weight: bold;
+}
+
+.leagueTeams {
+    margin-top: 8px;
+    padding-left: 0;
+}
+
+.leagueTeamItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.leagueTeamItem img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.leagueFavBtn {
+    margin-left: auto;
+    border: none;
+    background: none;
+    font-size: 26px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.leagueFavBtn:disabled {
+    cursor: default;
+}
+
+/*toast*/
+#toastContainer {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 1080;
+}
+
+.toast-message {
+    background-color: #193366;
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast-message.show {
+    opacity: 1;
+    transform: translateY(0);
+}
